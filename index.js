@@ -18,20 +18,20 @@ app.use(function(req, res, next) {
 	let filePath = path.join(__dirname, "static", req.url);
 	fs.stat(filePath, function(err, fileInfo) {
 		if (err) {	//if file does not exist
-			next();
+			next(new Error('File does not exist.'));
 			return;
 		}
 
 		if (fileInfo.isFile()) {
 			res.sendFile(filePath);
 		} else {
-			next();
+			next(new Error('Error sending file.'));
 		}
 	});
 });
 
 //the error handling middleware
-app.use(function(req, res) {
+app.use(function(err, req, res, next) {
 	res.status(404).send('File not found!');
 });
 
