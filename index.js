@@ -1,34 +1,17 @@
 // require the dependencies
 let express = require('express');
-let fs = require('fs');
 let path = require('path');
+let logger = require('morgan');
 
 //create an express app
 let app = express();
 
 //add the logging middleware to the express middleware stack
-app.use(function(req, res, next) {
-	console.log('Request IP: ' + req.url);
-	console.log('Request date: ' + new Date());
-	next();		//pass control to the next middleware
-});
+app.use(logger('short'));
 
 //the middleware to serve the file
-app.use(function(req, res, next) {
-	let filePath = path.join(__dirname, "static", req.url);
-	fs.stat(filePath, function(err, fileInfo) {
-		if (err) {	//if file does not exist
-			next();
-			return;
-		}
-
-		if (fileInfo.isFile()) {
-			res.sendFile(filePath);
-		} else {
-			next();
-		}
-	});
-});
+let staticPath = path.join(__dirname, 'static');
+app.use(express.static(staticPath));
 
 //the error handling middleware
 app.use(function(req, res) {
